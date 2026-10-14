@@ -295,6 +295,68 @@
   .callout.danger{border-color:#ef4444;background:#fef2f2;color:#7f1d1d;}
   .callout strong{color:inherit;}
 
+  /* ============ DEVELOPERS ============ */
+  .dev-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:16px;
+    margin:16px 0;
+  }
+  .dev-card{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px 20px;
+    background:#fff;
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+    transition:border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .dev-card:hover{
+    border-color:#bfdbfe;
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px -14px rgba(37,99,235,.5);
+  }
+  .dev-card .avatar{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    object-fit:cover;
+    flex:0 0 auto;
+    border:3px solid var(--primary-light);
+    background:#f1f5f9;
+  }
+  .dev-card .dev-info{min-width:0;}
+  .dev-card .dev-name{
+    margin:0 0 4px;
+    font-size:16px;
+    font-weight:700;
+    color:#0f172a;
+  }
+  .dev-card .dev-mail{
+    margin:0 0 10px;
+    font-size:13px;
+    word-break:break-all;
+  }
+  .dev-card .dev-mail a{color:var(--primary);text-decoration:none;}
+  .dev-card .dev-mail a:hover{text-decoration:underline;}
+  .dev-card .dev-role{
+    display:inline-block;
+    font-size:11.5px;
+    font-weight:700;
+    padding:2px 10px;
+    border-radius:999px;
+    margin-bottom:8px;
+  }
+  .dev-card .dev-role.lead{background:#dbeafe;color:#1e40af;}
+  .dev-card .dev-role.minor{background:#e2e8f0;color:#475569;}
+  .dev-card .dev-duty{
+    margin:0;
+    font-size:13px;
+    color:var(--text-muted);
+    line-height:1.75;
+  }
+
   .btn{
     display:inline-block;
     background:var(--primary);
@@ -510,7 +572,7 @@
     <a href="#faq" class="sub">常见问题</a>
     <div class="sep"></div>
     <a href="#tech">附录 A · 技术架构</a>
-    <a href="#code">附录 B · 代码详解</a>
+    <a href="#devs">附录 B · 开发人员名单</a>
   </aside>
 
   <!-- ============================= MAIN ============================= -->
@@ -1007,153 +1069,45 @@
     </section>
 
     <!-- ============ 附录 B ============ -->
-    <section id="code">
-      <h2><span class="num">B</span>附录 B · 代码详解</h2>
+    <section id="devs">
+      <h2><span class="num">B</span>附录 B · 开发人员名单</h2>
 
-      <h3 id="code-structure">B.1 项目结构</h3>
-      <pre><code>7.0/
-├── build/                  # 构建产物
-├── public/                 # manifest、图标、HTML 壳
-├── scripts/build.mjs, pack.mjs
-├── src/
-│   ├── background.ts       # Service Worker (SSE 流式代理)
-│   ├── prompts.ts          # AI 提示词中枢
-│   ├── types.ts            # CodeMirror 最小化类型声明
-│   ├── constants.ts        # 常量与默认值
-│   ├── i18n.ts             # 中/英国际化字典
-│   ├── editor/             # 主世界：编辑器直操作
-│   │   └── main.ts / codemirror.ts / events.ts
-│   ├── host/panel.tsx      # 隔离世界：React UI 宿主
-│   ├── core/ghost.ts       # 内联幽灵文本
-│   ├── lib/                # settings/stream/improve/
-│   │                       # ghost-stream/tokens/dom/cross-context
-│   └── ui/                 # StatusBadge/Toolbar/ToolbarEditor/
-│                           # CustomPromptEditor/SyntaxCheckPanel/
-│                           # options/Icon...
-└── vite.config.ts</code></pre>
-
-      <h3 id="code-entry">B.2 入口与运行环境</h3>
-
-      <h4>background.ts（后台 Service Worker）</h4>
-      <p>只做一件事：<strong>代理流式 LLM 请求</strong>。</p>
-      <ul>
-        <li>监听 <code>chrome.runtime.onConnect</code>，只接受 <code>olx-stream</code> 长连接；</li>
-        <li>content script 发 <code>{type:'start-stream', payload:{apiKey,apiBaseUrl,model,max_tokens,messages}}</code>，background <code>fetch</code> 到 <code>&lt;baseUrl&gt;/chat/completions</code>（<code>stream:true</code>）；</li>
-        <li><code>response.body.getReader()</code> 逐块读字节流，按 <code>\r?\n</code> 切行解析 SSE；</li>
-        <li>SSE 区分正文 / 思考：<code>delta.content</code> → <code>kind:'token'</code>，<code>delta.reasoning_content</code> / <code>reasoning</code> → <code>kind:'reasoning'</code>（思考绝不当作正文，兼容思考模型）；</li>
-        <li>中断完备：AbortController 取消 fetch；<code>port.onDisconnect</code> 时 abort + cancel reader；端口死后返回 false 停循环；finally 统一清理；</li>
-        <li>另有 <code>open-options</code> 消息、<code>action.onClicked</code> 打开设置页。</li>
-      </ul>
-      <div class="callout"><strong>为什么绕道 background 而非内容脚本直连？</strong>统一收口密钥逻辑、CSP，并为将来的重试 / 计费留出空间。</div>
-
-      <h4>editor/main.ts（主世界）</h4>
-      <ol>
-        <li>快捷键：挂编辑器 DOM 按键事件（<kbd>Tab</kbd> 整段、<kbd>Ctrl/Cmd</kbd>+<kbd>→</kbd> 逐词、配置续写键）；</li>
-        <li>续写触发：取光标前 / 后 5000 字符发 <code>olx:continue:response</code>；</li>
-        <li>选区追踪：核心 hack <code>hookCmDispatch</code> monkey-patch <code>view.dispatch</code>，每次变更后 <code>debouncedSelectionCheck()</code>（300ms 防抖）判定选区发事件；</li>
-        <li>挂载带重试（脚本注入时 CodeMirror 可能未就绪）；</li>
-        <li>注册 <code>events.ts</code> 写回处理器到对应 <code>olx:*</code> 事件。</li>
-      </ol>
-
-      <h4>host/panel.tsx（隔离世界）</h4>
-      <ul>
-        <li>模块级状态保存设置 / 选区 / AI 模式 / 加载状态；</li>
-        <li>轮询等编辑器容器，<code>createRoot</code> 渲染 StatusBadge；</li>
-        <li>菜单动作：<code>handleContinue</code> / <code>handleCustomTask</code> / <code>openToolbarEditor</code> / <code>handleArticleEdit</code> / <code>handleSyntaxFix</code>（最复杂：切 XeLaTeX → 编译 → 抓日志 → AI 修复）；</li>
-        <li>监听主世界事件同步选区；<code>chrome.storage.onChanged</code> 时重载设置重渲染。</li>
-      </ul>
-
-      <h3 id="code-editor">B.3 editor/ — 编辑器直接操作层</h3>
-      <ul>
-        <li><strong>codemirror.ts</strong>：<code>getEditorView()</code> 经 <code>.cm-content</code> 的 <code>cmView.view</code>（非公开 API，唯一途径）；<code>textBeforeCursor</code> / <code>textAfterCursor</code> 安全切片；<code>syncGhostOnCursorMove()</code> 实现「打字后建议消失」。</li>
-        <li><strong>events.ts</strong>：核心是算最小 diff —— <code>minimalChanges()</code> 用 fast-diff 转 CodeMirror changes 只改差异位（段数 ≥400 退化为整块替换）；<code>onApplyReplace</code> / <code>onAcceptGhost</code> / <code>onAcceptGhostWord</code> / <code>onApplyPatches</code> / <code>onApplyEditList</code> 各类写回，批量变更按位置倒序一次性 dispatch。</li>
-      </ul>
-
-      <h3 id="code-lib">B.4 lib/ — 业务工具库</h3>
-      <ul>
-        <li><strong>settings.ts</strong>：① Web Crypto AES-GCM 加密，设备级 32 字节密钥，密文 <code>base64(iv):base64(cipher)</code>；② <code>loadSettings()</code> 从 storage 取设置 + 旧键兼容；③ <code>cleanToken()</code> 剥离思考标签 / markdown 围栏；④ <code>sanitizeContentForApi</code> 删图片路径省 token；⑤ <code>interpolateTemplate</code> 支持 <code>{{selection}}</code> / <code>{{before}}</code> / <code>{{after}}</code> 及切片。</li>
-        <li><strong>stream.ts（核心基础设施）</strong> — 把一次流式对话封装成 async generator：
-          <ul>
-            <li><code>chrome.runtime.connect({name:'olx-stream'})</code> 连 background；</li>
-            <li><strong>队列 + 唤醒</strong>：onMessage 推 queue 并 wake；generator 有消息 yield、无消息挂起（避免轮询）；</li>
-            <li>abort 信号取消、断连自动清理；</li>
-            <li>消息 kind 原样转发：token / reasoning / error / done，消费方自取舍（思考一律丢弃）；</li>
-            <li>improve.ts / ghost-stream.ts 委托它，仅差 prompt builder 和参数。</li>
-          </ul>
-        </li>
-        <li><strong>tokens.ts</strong>：<code>estimateInputTokens</code>（CJK 1.6 字符/token，其余 4）；<code>computeMaxTokens</code> 多因子（模式 × 场景 × 输入），思考模型适配预算，按场景 floor / cap 夹逼。</li>
-        <li><strong>cross-context.ts</strong>：<code>createCrossContextEvent</code> Firefox <code>wrappedJSObject</code> + <code>cloneInto</code> 跨世界桥，消除重复定义。</li>
-      </ul>
-
-      <h3 id="code-prompts">B.5 prompts.ts — 提示词中枢</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th style="width:220px">模板</th><th style="width:150px">用途</th><th>特点</th></tr></thead>
-          <tbody>
-            <tr><td><code>CONTINUATION</code></td><td>默认续写</td><td>返回 3 个风格方案的 JSON 数组</td></tr>
-            <tr><td><code>FAST_CONTINUATION</code></td><td>短输出续写</td><td>2 个短方案</td></tr>
-            <tr><td><code>THINK_CONTINUATION</code></td><td>长输出续写</td><td>先分析再出 3 方案</td></tr>
-            <tr><td><code>CUSTOM_TASK</code></td><td>自定义任务</td><td>非数学内容包成 LaTeX 结构</td></tr>
-            <tr><td><code>CUSTOM_ACTION_WRAPPER</code></td><td>自定义动作包装</td><td>提示词包进 LaTeX 上下文</td></tr>
-            <tr><td><code>DEFAULT_IMPROVE_FALLBACK</code></td><td>改写兜底</td><td>无自定义模板时用</td></tr>
-            <tr><td><code>SYNTAX_CHECK</code></td><td>语法审查</td><td>输出结构化 JSON</td></tr>
-          </tbody>
-        </table>
+      <h3>开发小组成员</h3>
+      <div class="dev-grid">
+        <div class="dev-card">
+          <img class="avatar" src="cyx.jpg" alt="岑逸轩">
+          <div class="dev-info">
+            <div class="dev-name">岑逸轩</div>
+            <span class="dev-role lead">开发者</span>
+            <p class="dev-mail"><a href="mailto:cyx2009@mail.ustc.edu.cn">cyx2009@mail.ustc.edu.cn</a></p>
+            <p class="dev-duty"><strong>负责内容：</strong>组织工作、后端、部分前端。</p>
+          </div>
+        </div>
+        <div class="dev-card">
+          <img class="avatar" src="Kamihakuyie.jpg" alt="Kamihakuyie">
+          <div class="dev-info">
+            <div class="dev-name">Kamihakuyie</div>
+            <span class="dev-role lead">开发者</span>
+            <p class="dev-mail"><a href="mailto:hslyx07313@mail.ustc.edu.cn">hslyx07313@mail.ustc.edu.cn</a></p>
+            <p class="dev-duty"><strong>负责内容：</strong>前端、美工、代码审计、用户指南。</p>
+          </div>
+        </div>
+                <div class="dev-card">
+          <div class="dev-info">
+            <div class="dev-name">张文昊</div>
+            <span class="dev-role minor">开发者</span>
+            <p class="dev-duty"><strong>负责内容：</strong>测试和部分修改。</p>
+          </div>
+        </div>
+        <div class="dev-card">
+          <div class="dev-info">
+            <div class="dev-name">王天和</div>
+            <span class="dev-role minor">开发者</span>
+            <p class="dev-duty"><strong>负责内容：</strong>测试和部分修改。</p>
+          </div>
+        </div>
       </div>
 
-      <h3 id="code-ghost">B.6 core/ghost.ts — 内联幽灵文本</h3>
-      <p><code>InlineGhost</code> 管理灰色幽灵续写（类 Copilot），纯 DOM（MAIN world，不进 React）：</p>
-      <ul>
-        <li><code>create()</code> 在 <code>.cm-scroller</code> 插幽灵层对齐光标；</li>
-        <li>状态存 DOM <code>data-</code> 属性（generating / completed / partial-accepted / error）；</li>
-        <li><code>generate()</code> 消费流逐 token 刷新；词级接受状态迁移（<kbd>Ctrl</kbd>+<kbd>→</kbd>）。</li>
-      </ul>
-
-      <h3 id="code-ui">B.7 ui/ — React 组件层</h3>
-      <pre class="diagram"><code>host/panel.tsx ─┬ StatusBadge       (AI 徽章 + 菜单)
-                ├ CustomPromptEditor(自定义任务浮窗)
-                ├ ToolbarEditor    (结果编辑浮窗)
-                └ SyntaxCheckPanel (语法修复侧边栏)
-ui/options.tsx ── IconSelect → Icon, hooks (设置页)</code></pre>
-      <ul>
-        <li><strong>StatusBadge</strong>：徽章 + 菜单，含三输出模式切换（⚡→🖥→🧠）。</li>
-        <li><strong>Toolbar</strong>：选区浮动工具栏，自定义动作图标。</li>
-        <li><strong>ToolbarEditor</strong>：核心面板，流式 / 多方案卡片 / diff / 插入替换。</li>
-        <li><strong>CustomPromptEditor</strong>：两阶段自定义任务浮窗。</li>
-        <li><strong>SyntaxCheckPanel</strong>：语法修复侧边栏，<code>extractJSON</code> 截断恢复四级补救。</li>
-        <li><strong>options</strong>：设置页，卡片式布局。</li>
-      </ul>
-
-      <h3 id="code-misc">B.8 i18n / types / constants</h3>
-      <ul>
-        <li><strong>i18n.ts</strong>：字典式 i18n，zh 默认、en 备用，<code>t(key, vars?)</code>。</li>
-        <li><strong>types.ts</strong>：最小化 CodeMirror 声明，不引 <code>@codemirror/*</code>。</li>
-        <li><strong>constants.ts</strong>：storage 键、默认值、上下文窗口、<code>MODEL_PRESETS</code>。</li>
-      </ul>
-
-      <h3 id="code-flow">B.9 数据流示例（选中 → 改进 → 替换）</h3>
-      <pre class="diagram"><code>[选区]  hookCmDispatch 捕获 dispatch
-          → 300ms 防抖 → checkSelectionState 判 from≠to
-          → 发 olx:editor:select → panel 记录 currentSelection
-
-[点击改进]  openToolbarEditor 挂载 &lt;ToolbarEditor&gt;
-          → streamChat → connect('olx-stream')
-          → background fetch POST /chat/completions (stream:true)
-
-[流式]  background 逐 token postMessage
-          → ToolbarEditor cleanToken → textarea 实时显示
-
-[替换]  发 olx:editor:replace → onApplyReplace
-          → minimalChanges(fast-diff) → view.dispatch 写回
-          → 关闭浮层</code></pre>
-
-      <h3 id="code-commands">B.10 开发命令</h3>
-      <pre><code>npm install          # 安装依赖
-npm run typecheck    # 类型检查 (tsc --noEmit)
-npm run build        # 生产构建
-npm run repack       # 构建 + 打包 (Chrome zip + Firefox xpi)
-npm run pack:chrome  # 仅打包 Chrome
-npm run pack:firefox # 仅打包 Firefox</code></pre>
     </section>
 
     <!-- ============ 页脚 ============ -->
