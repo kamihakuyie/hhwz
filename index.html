@@ -536,55 +536,181 @@
     section > h2{font-size:19px;}
     #menuBtn{display:flex;align-items:center;justify-content:center;}
   }
-  /* ============ 移动端适配 ============ */
-  @media screen and (max-width:768px){
-    /* 1. 修复全局文字溢出 */
-    body{
-      font-size:14px;
-      word-wrap:break-word;
-      overflow-wrap:break-word;
-    }
-
-    /* 2. 顶部标题区 */
-    .hero{padding:30px 16px;}
-    .hero-logo{max-width:100%;margin-bottom:16px;}
-    .hero-sub{font-size:14px;}
-    .hero-chips{gap:8px;}
-    .hero-chips span{font-size:12px;padding:4px 10px;white-space:normal;}
-
-    /* 3. 卡片自动换行：强制单列堆叠 */
-    .grid,.modes,.dev-grid{
-      grid-template-columns:1fr;
-      gap:12px;
-    }
-
-    /* 4. 内容区块内边距 */
-    section{padding:20px 16px;}
-    section > h2{font-size:18px;}
-    .layout{padding:16px;}
-
-    /* 5. 表格横向滚动 */
-    .table-wrap{
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-    table{min-width:500px;}
-
-    /* 6. 图片自适应 */
-    img{max-width:100%;height:auto;}
-
-    /* 7. 长代码块换行 */
-    pre{
-      white-space:pre-wrap;
-      word-break:break-all;
-      font-size:12px;
-    }
-    pre code{white-space:pre-wrap;}
-
-    /* 8. 开发者卡片头像与文字自适应 */
-    .dev-card{flex-direction:column;align-items:center;text-align:center;}
-    .dev-card .dev-mail{word-break:break-word;}
+/* ============ 移动端适配 ============ */
+@media screen and (max-width: 768px) {
+  /* 1. 全局：行高收一点，避免换行后拉太开；允许长词断行 */
+  body {
+    font-size: 14px;
+    line-height: 1.7;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
   }
+
+  /* 2. 顶部标题区：logo 大幅缩小，避免整屏都被 logo 占掉 */
+  .hero {
+    padding: 26px 18px 30px;
+  }
+  .hero-logo {
+    max-width: 240px;      /* 关键：原来 100% 太大 */
+    margin: 0 0 14px;
+  }
+  .hero-sub {
+    font-size: 13.5px;
+    margin: 0 0 16px;
+  }
+  .hero-chips {
+    gap: 6px;
+  }
+  .hero-chips span {
+    font-size: 11.5px;
+    padding: 4px 9px;
+    /* 不换行，避免挤成两行 */
+    white-space: nowrap;
+  }
+
+  /* 3. 布局：缩小左右 padding，让内容区更宽 */
+  .layout {
+    padding: 14px 12px 90px;
+    gap: 0;
+  }
+  section {
+    padding: 18px 14px 22px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    overflow: hidden;      /* 防止子元素溢出撑破卡片 */
+  }
+  section > h2 {
+    font-size: 17px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    gap: 8px;
+  }
+  section > h2 .num {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  /* 4. 标题 */
+  h3 {
+    font-size: 15px;
+    margin: 22px 0 8px;
+  }
+  h3::before {
+    width: 3px;
+    height: 13px;
+    margin-right: 7px;
+  }
+  h4 {
+    font-size: 14px;
+    margin: 16px 0 6px;
+  }
+
+  /* 5. 段落/列表 */
+  p { margin: 8px 0; }
+  ul, ol { padding-left: 18px; }
+  li { margin: 4px 0; }
+
+  /* 6. 卡片：单列堆叠 */
+  .grid, .modes, .dev-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .card { padding: 14px 15px; }
+  .card .ico { font-size: 18px; margin-bottom: 6px; }
+  .card h5 { font-size: 14px; }
+  .card p { font-size: 12.5px; line-height: 1.65; }
+
+  /* 7. 表格：横向滚动 + 缩小字号
+        注意：th 允许换行，否则列会撑得特别宽 */
+  .table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    min-width: 440px;
+    font-size: 13px;
+  }
+  th {
+    white-space: normal;   /* 关键：允许表头换行 */
+    padding: 9px 11px;
+  }
+  td {
+    padding: 9px 11px;
+  }
+
+  /* 8. 图片/截图 */
+  img { max-width: 100%; height: auto; }
+  .shot { border-radius: 8px; }
+
+  /* 9. 代码块：允许换行，防止横向撑爆 */
+  pre {
+    padding: 13px 14px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  pre code {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  code {
+    font-size: .85em;
+    padding: 1px 5px;
+    word-break: break-word;
+  }
+
+  /* 10. 步骤 */
+  .steps li {
+    padding: 0 0 0 36px;
+    font-size: 13.5px;
+    margin-bottom: 12px;
+  }
+  .steps li::before {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  /* 11. callout */
+  .callout {
+    padding: 11px 14px;
+    font-size: 13px;
+  }
+
+  /* 12. 开发者卡片：保持横向，头像缩小 */
+  .dev-card {
+    padding: 14px 15px;
+    gap: 12px;
+    align-items: flex-start;
+    text-align: left;
+    flex-direction: row;
+  }
+  .dev-card .avatar {
+    width: 60px;
+    height: 60px;
+    border-width: 2px;
+  }
+  .dev-card .dev-name { font-size: 15px; }
+  .dev-card .dev-mail { font-size: 12.5px; word-break: break-all; }
+  .dev-card .dev-duty { font-size: 12.5px; line-height: 1.65; }
+
+  /* 13. kbd / 按钮 */
+  kbd {
+    font-size: 11.5px;
+    padding: 1px 6px;
+  }
+  .btn {
+    font-size: 14px;
+    padding: 10px 22px;
+  }
+}
   @media print{
     .sidebar,#toTop,#menuBtn,#backdrop{display:none!important;}
     .layout{display:block;padding:0;max-width:none;}
