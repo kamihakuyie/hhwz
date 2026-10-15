@@ -21,16 +21,20 @@
     --sidebar-w:282px;
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{
+    scroll-behavior:smooth;
+    max-width:100%;
+    overflow-x:hidden;
+  }
   body{
     margin:0;
+    max-width:100%;
+    overflow-x:hidden;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
     color:var(--text);
     background:var(--bg);
     line-height:1.8;
     font-size:15px;
-    max-width: 100%;
-    overflow-x: hidden;
     -webkit-font-smoothing:antialiased;
   }
 
@@ -516,6 +520,9 @@
     .hero-logo{max-width:340px;}
     .hero-sub{font-size:15px;}
     .layout{flex-direction:column;padding:22px 16px 100px;gap:0;}
+    main{width:100%;min-width:0;flex:none;}
+    section{max-width:100%;}
+    .table-wrap{width:100%;max-width:100%;}
     .sidebar{
       position:fixed;
       top:0;left:0;
@@ -580,7 +587,9 @@
     padding: 18px 14px 22px;
     margin-bottom: 14px;
     border-radius: 10px;
-    overflow: hidden;      /* 防止子元素溢出撑破卡片 */
+    overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   section > h2 {
     font-size: 17px;
@@ -616,34 +625,42 @@
   ul, ol { padding-left: 18px; }
   li { margin: 4px 0; }
 
+  /* 5b. 行内 code / kbd：允许在长串（URL、密钥）处断行，避免撑破行盒 */
+  code {
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+  td code { white-space: normal; }
+
   /* 6. 卡片：单列堆叠 */
   .grid, .modes, .dev-grid {
     grid-template-columns: 1fr;
     gap: 10px;
+    max-width: 100%;
   }
-  .card { padding: 14px 15px; }
-  .card .ico { font-size: 18px; margin-bottom: 6px; }
-  .card h5 { font-size: 14px; }
-  .card p { font-size: 12.5px; line-height: 1.65; }
-
+  .card, .mode, .dev-card {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
   /* 表格：确保表格在容器内滚动，而不是撑宽整个页面 */
-.table-wrap {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-table {
-  min-width: 440px;   /* 表格本身的最小宽度，允许它内部滚动 */
-  font-size: 13px;
-}
-th {
-  white-space: normal;
-  padding: 9px 11px;
-}
-td {
-  padding: 9px 11px;
-}
+  .table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    min-width: 440px;
+    font-size: 13px;
+  }
+  th {
+    white-space: normal;
+    padding: 9px 11px;
+  }
+  td {
+    padding: 9px 11px;
+  }
 
   /* 8. 图片/截图 */
   img { max-width: 100%; height: auto; }
@@ -651,21 +668,19 @@ td {
 
   /* 9. 代码块：允许换行，防止横向撑爆 */
   pre {
-    padding: 13px 14px;
-    font-size: 11.5px;
-    line-height: 1.55;
+    padding: 12px 12px;
+    font-size: 11px;
+    line-height: 1.5;
     white-space: pre-wrap;
-    word-break: break-word;
+    word-break: break-all;
     overflow-wrap: anywhere;
+    max-width: 100%;
+    overflow-x: hidden;
   }
   pre code {
     white-space: pre-wrap;
-    word-break: break-word;
-  }
-  code {
-    font-size: .85em;
-    padding: 1px 5px;
-    word-break: break-word;
+    word-break: break-all;
+    font-size: 11px;
   }
 
   /* 10. 步骤 */
@@ -1176,28 +1191,12 @@ td {
       <div class="callout warn"><code>package.json</code> 保留 <code>markdown-it</code> / <code>dompurify</code> 依赖但源码未实际使用（AI 结果以纯文本 / diff 展示，不做 Markdown 渲染）。</div>
 
       <h3 id="tech-layers">A.2 分层架构（双世界架构）</h3>
-      <p>采用<strong>双世界（Dual World）架构</strong>，是扩展访问页面 JS 内部状态的关键设计：</p>
-      <pre class="diagram"><code>┌──────────────────────────────────────────────────────┐
-│                Overleaf 项目编辑页                     │
-│  ┌──────────────┐  olx:* 事件总线  ┌──────────────┐   │
-│  │  editorMain  │◄───────────────►│  hostPanel   │   │
-│  │  (MAIN 世界)  │                │  (隔离世界)    │   │
-│  │  CodeMirror  │                │  React UI    │   │
-│  │  快捷键/选区  │                │  storage/浮层 │   │
-│  └──────────────┘                └──────┬───────┘   │
-└─────────────────────────────────────────┼───────────┘
-                          chrome.runtime.connect
-                      ┌───────────────────▼──────────┐
-                      │        background.ts         │
-                      │      (Service Worker)        │
-                      │     SSE 流式 LLM 代理         │
-                      └──────────────────────────────┘</code></pre>
-
-      <ul>
-        <li><strong>editorMain.ts（主世界）</strong> — 「手脚」：直读 CodeMirror 6 内部对象、读写文档。</li>
-        <li><strong>hostPanel.tsx（隔离世界）</strong> — 「大脑 + 脸面」：React 组件、设置管理、AI 调度、浮层生命周期。</li>
-        <li><strong>background.ts</strong> — 网络代理：MV3 要求网络请求走 Service Worker，统一 SSE 转发与中断处理。</li>
-      </ul>
+<p>采用<strong>双世界（Dual World）架构</strong>，是扩展访问页面 JS 内部状态的关键设计，整体分为三层：</p>
+<ul>
+  <li><strong>editorMain.ts（主世界）</strong> —— 「手脚」：直读 CodeMirror 6 内部对象、读写文档。</li>
+  <li><strong>hostPanel.tsx（隔离世界）</strong> —— 「大脑 + 脸面」：React 组件、设置管理、AI 调度、浮层生命周期。</li>
+  <li><strong>background.ts（Service Worker）</strong> —— 网络代理：MV3 要求网络请求走 Service Worker，统一 SSE 转发与中断处理。</li>
+</ul>
 
       <h4>事件协议（<code>olx:*</code>）</h4>
       <div class="table-wrap">
