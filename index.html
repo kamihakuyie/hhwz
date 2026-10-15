@@ -24,12 +24,13 @@
   html{
     scroll-behavior:smooth;
     max-width:100%;
-    overflow-x:hidden;
+    /* 用 clip 而非 hidden：clip 不建立滚动容器，不会破坏 sticky / fixed 定位 */
+    overflow-x:clip;
   }
   body{
     margin:0;
     max-width:100%;
-    overflow-x:hidden;
+    overflow-x:clip;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
     color:var(--text);
     background:var(--bg);
