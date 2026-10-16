@@ -729,8 +729,87 @@
     padding: 10px 22px;
   }
 }
+  /* ============ 学术不端警示弹窗 ============ */
+  .notify-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:9999;
+    -webkit-backdrop-filter:blur(2px);
+    backdrop-filter:blur(2px);
+  }
+  .notify-overlay.show{display:flex;}
+  .notify{
+    width:100%;
+    max-width:560px;
+    max-height:calc(100vh - 40px);
+    overflow-y:auto;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 24px 60px -18px rgba(15,23,42,.45);
+    border-top:5px solid #dc2626;
+    padding:26px 28px 22px;
+    animation:notifyIn .28s ease-out;
+  }
+  @keyframes notifyIn{
+    from{opacity:0;transform:translateY(14px) scale(.98);}
+    to{opacity:1;transform:none;}
+  }
+  .notify h3{
+    margin:0 0 12px;
+    font-size:19px;
+    color:#b91c1c;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .notify h3::before{display:none;}
+  .notify p{
+    font-size:14px;
+    color:var(--text-soft);
+    margin:0 0 14px;
+  }
+  .notify ul{
+    margin:0 0 16px;
+    padding-left:20px;
+  }
+  .notify li{font-size:13.5px;color:var(--text-soft);margin:6px 0;}
+  .notify .notify-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:0 0 18px;
+  }
+  .notify .notify-links a{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    padding:8px 15px;
+    border-radius:9px;
+    border:1px solid var(--primary);
+    color:var(--primary);
+    background:var(--primary-light);
+    text-decoration:none;
+    transition:.16s;
+  }
+  .notify .notify-links a:hover{
+    background:var(--primary);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  .notify .notify-actions{
+    text-align:right;
+    border-top:1px solid var(--border);
+    padding-top:16px;
+  }
+
   @media print{
-    .sidebar,#toTop,#menuBtn,#backdrop{display:none!important;}
+    .sidebar,#toTop,#menuBtn,#backdrop,.notify-overlay{display:none!important;}
     .layout{display:block;padding:0;max-width:none;}
     section{box-shadow:none;border:none;padding:0;margin-bottom:26px;break-inside:avoid;}
     .hero{background:#e2ecff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
@@ -1370,6 +1449,28 @@
 <button id="toTop" aria-label="返回顶部">↑</button>
 <div id="backdrop"></div>
 
+<!-- ============ 学术不端行为警示弹窗 ============ -->
+<div class="notify-overlay" id="notifyOverlay" role="dialog" aria-modal="true" aria-labelledby="notifyTitle">
+  <div class="notify">
+    <h3 id="notifyTitle">⚠️ 学术诚信提醒</h3>
+    <p>本工具旨在<strong>辅助学术写作与排版</strong>，帮助研究者提升表达与效率。请务必遵守学术规范，合理使用 AI 能力。</p>
+    <ul>
+      <li>AI 生成内容仅作参考，须经作者核实、修改并对最终结果负责。</li>
+      <li>不得将 AI 生成内容直接作为原创成果提交或发表。</li>
+      <li>严禁抄袭、伪造数据、代写等学术不端行为。</li>
+      <li>使用 AI 辅助须符合学校及期刊的相关规定与披露要求。</li>
+    </ul>
+    <p>请阅读以下资料，了解学术不端行为的具体界定与处理办法：</p>
+    <div class="notify-links">
+      <a href="http://kycx.ustc.edu.cn/2024/0912/c34302a653362/page.htm" target="_blank" rel="noopener">📄 科研诚信相关规定</a>
+      <a href="https://gradschool.ustc.edu.cn/static/upload/article/file/1779088544462/1779088544462-671405.pdf" target="_blank" rel="noopener">📕 学术不端行为处理办法（PDF）</a>
+    </div>
+    <div class="notify-actions">
+      <button class="btn" id="notifyConfirm">我已阅读并知悉</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   var sidebar  = document.getElementById('sidebar');
@@ -1431,6 +1532,32 @@
 
   window.addEventListener('resize', update);
   update();
+
+  /* ---------- 学术不端警示弹窗 ---------- */
+  var notifyOverlay = document.getElementById('notifyOverlay');
+  var notifyConfirm = document.getElementById('notifyConfirm');
+
+  function closeNotify() {
+    notifyOverlay.classList.remove('show');
+    document.body.style.overflow = '';
+    try { sessionStorage.setItem('ustcNotifySeen', '1'); } catch (e) {}
+  }
+
+  var notifySeen = false;
+  try { notifySeen = sessionStorage.getItem('ustcNotifySeen') === '1'; } catch (e) {}
+
+  if (!notifySeen) {
+    notifyOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  notifyConfirm.addEventListener('click', closeNotify);
+  notifyOverlay.addEventListener('click', function (e) {
+    if (e.target === notifyOverlay) closeNotify();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && notifyOverlay.classList.contains('show')) closeNotify();
+  });
 })();
 </script>
 </body>
