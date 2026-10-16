@@ -857,6 +857,8 @@
     <!-- ============ 一、简介 ============ -->
     <section id="overview">
       <h2><span class="num">一</span>工具介绍</h2>
+      
+      <div class="callout warn">工具正在持续开发中，欢迎加入内测QQ群：1101715467。</div>
 
       <h3 id="overview-intro">1.1 工具简介</h3>
       <p><strong>瀚海文助——USTC LaTeX 学术写作助手</strong> 是一款专为USTC Overleaf LaTeX 在线编辑器设计的 AI 辅助写作浏览器扩展（Chrome / Firefox / Edge），面向中国科学技术大学学术社区。针对 LaTeX 学术写作提供<strong>智能续写、文本润色、语法修复、自定义任务、文章修改、自定义工具栏动作与自定义域名</strong>等功能，帮助研究者在 Overleaf 中无需切换工具即可完成高质量学术写作。</p>
@@ -877,7 +879,7 @@
         <div class="card">
           <span class="ico">🤖</span>
           <h5>模型支持</h5>
-          <p>兼容任何 OpenAI 格式端点。预设 DeepSeek V4 Pro / Flash / Flash-Ascend、GLM-5.2、Qwen3.6-Reasoner（含思考 / 推理能力，已兼容）「测试连接」可自动拉取完整模型列表</p>
+          <p>兼容任何 OpenAI 格式端点。预设 DeepSeek V4 Flash 等主流LLM，使用「测试连接」可自动拉取完整模型列表</p>
         </div>
       </div>
     </section>
@@ -895,7 +897,7 @@
           <tbody>
             <tr><td><strong>继续写作</strong></td><td>AI 从光标 / 选中处继续撰写</td></tr>
             <tr><td><strong>写作规范</strong></td><td>按不同学科适配用语规范，可自定义学科，改进提示词</td></tr>
-            <tr><td><strong>文章修改</strong></td><td>输入修改方向，AI 深度改写（更正式 / 转英文 / 精简等），提升语法、流畅度、学术风格</td></tr>
+            <tr><td><strong>文章修改</strong></td><td>输入修改方向，AI 深度改写（更正式 / 转英文 / 精简等）提升语法、流畅度、学术风格</td></tr>
             <tr><td><strong>英文语法修改</strong></td><td>自动修改英文文章语法错误并标注差异</td></tr>
             <tr><td><strong>LaTeX 语法修改</strong></td><td>自动抓取日志与源码、修复 LaTeX 语法和编译错误</td></tr>
             <tr><td><strong>自定义任务</strong></td><td>输入任意指令让 AI 处理内容</td></tr>
@@ -907,20 +909,50 @@
 
       <h3 id="features-detail">2.2 基础功能</h3>
 
-      <h4>🎛️ 仪表盘</h4>
+      <h4>🎛️ 1.仪表盘</h4>
       <p>仪表盘挂载在 <strong>USTC LaTeX 界面右下角</strong>，是扩展的主入口，集中承载所有 AI 功能的触发按钮。默认包含<strong>继续写作、自定义任务、文章修改、LaTeX 语法修改、英文语法修改、输出模式与设置</strong>，点击图标即可打开对应功能面板。</p>
       <div class="shots">
         <img class="shot" src="panel.png" alt="挂载在 USTC LaTeX 界面右下角的仪表盘">
       </div>
 
-      <h4>✍️ 继续写作</h4>
+      <h4>✍️ 2.继续写作</h4>
       <p>写到一半卡住时，AI 根据光标前 <strong>5000 字符</strong>上下文生成 <strong>3 个风格方案</strong>（严谨学术 / 简洁直接 / 详细展开），以可滚动卡片展示，点击「同意」插入。内容自动延续 LaTeX 环境（如 <code>\item</code>）、引用风格（<code>\cite{}</code>）、数学符号和编号惯例。</p>
       <div class="shots">
         <img class="shot" src="jxxz.png" alt="继续写作">
       </div>
 
-      <h4>🎚️ 三种 AI 输出模式（输出长度倍率）</h4>
-      <p>通过徽章菜单循环切换：</p>
+      <h4>🧩 3.自定义任务</h4>
+      <p>输入任意指令（翻译 / 生成 3×4 表格 / 排版公式），两阶段浮窗（input → output），AI 生成纯 LaTeX 代码，可预览、重新生成、插入或替换。非数学内容（小说、报告、信件）自动包装为合法 LaTeX 结构。</p>
+      <div class="shots">
+        <img class="shot" src="zdyrw.png" alt="自定义任务">
+      </div>
+
+      <h4>📝 4.文章修改</h4>
+      <p>选中文字后，输入修改方向（如「更正式」/「改英文」/「精简」），AI 读取选区及前后各 <strong>2000 字符</strong>上下文深度改写，面板预览后一键替换，保留所有 LaTeX 命令与数学公式。</p>
+      <div class="shots">
+        <img class="shot" src="wzgx.png" alt="文章修改">
+      </div>
+
+      <h4>🔧 5.LaTeX 语法修改</h4>
+      <p>LaTeX 编译报错时，点击仪表盘中的LaTeX 语法修改，一键执行全流程：</p>
+      <ol class="steps">
+        <li>切 XeLaTeX（中文兼容）重新编译</li>
+        <li>抓取日志，将「源码前 8000 字符 + 错误日志」交给 AI</li>
+        <li>弹出修复面板（含来源标签、置信度、问题描述、<code>查找 → 替换</code> 预览）</li>
+        <li>勾选后点击「同意全部」批量写回</li>
+      </ol>
+      <div class="shots">
+        <img class="shot" src="latexyfxg.png" alt="LaTeX 语法修改">
+      </div>
+
+      <h4>🔤 6.英文语法修改</h4>
+      <p>自动修改英文文章语法错误，逐处标注差异，可预览后一键写回。</p>
+      <div class="shots">
+        <img class="shot" src="ywyfxg.png" alt="英文语法修改">
+      </div>
+
+      <h4>🎚️ 7.三种 AI 输出模式（输出长度倍率）</h4>
+      <p>通过点击仪表盘菜单的“输出：短/中/长输出”循环切换：</p>
       <div class="modes">
         <div class="mode short">
           <div class="m-title">⚡ 短输出 <span class="m-mul">×0.7</span></div>
@@ -936,51 +968,17 @@
         </div>
       </div>
 
-      <h4>📝 文章修改</h4>
-      <p>选中文字后，输入修改方向（如「更正式」/「改英文」/「精简」），AI 读取选区及前后各 <strong>2000 字符</strong>上下文深度改写，面板预览后一键替换，保留所有 LaTeX 命令与数学公式。</p>
-      <div class="shots">
-        <img class="shot" src="wzgx.png" alt="文章修改">
-      </div>
-
-      <h4>🧩 自定义任务</h4>
-      <p>输入任意指令（翻译 / 生成 3×4 表格 / 排版公式），两阶段浮窗（input → output），AI 生成纯 LaTeX 代码，可预览、重新生成、插入或替换。非数学内容（小说、报告、信件）自动包装为合法 LaTeX 结构。</p>
-      <div class="shots">
-        <img class="shot" src="zdyrw.png" alt="自定义任务">
-      </div>
-
-      <h4>🔧 LaTeX 语法修改</h4>
-      <p>LaTeX 编译报错时一键全流程：</p>
-      <ol class="steps">
-        <li>切 XeLaTeX（中文兼容）</li>
-        <li>重新编译</li>
-        <li>抓取日志</li>
-        <li>将「源码前 8000 字符 + 错误日志」交给 AI</li>
-        <li>在 PDF 面板旁弹出修复面板（含来源标签、置信度、问题描述、<code>查找 → 替换</code> 预览）</li>
-        <li>勾选后点击「同意全部」批量写回</li>
-      </ol>
-      <div class="shots">
-        <img class="shot" src="latexyfxg.png" alt="LaTeX 语法修改">
-      </div>
-
-      <h4>🔤 英文语法修改</h4>
-      <p>自动修改英文文章语法错误，逐处标注差异，可预览后一键写回。</p>
-      <div class="shots">
-        <img class="shot" src="ywyfxg.png" alt="英文语法修改">
-      </div>
-
-      <h4>🧷 自定义工具栏动作</h4>
-      <p>设置页创建可复用动作（名称 / 图标 / 提示词，支持 <code>{{selection}}</code>、<code>{{before}}</code>、<code>{{after}}</code> 及切片 <code>{{selection[0:500]}}</code>）。保存后选中文本时浮动工具栏显示对应图标，一键执行。提示词自动被 LaTeX 上下文规则包裹，确保输出合法。</p>
 
       <h3 id="features-advanced">2.3 进阶功能</h3>
 
-      <h4>🎓 写作规范</h4>
+      <h4>🎓 1.写作规范</h4>
       <p>在设置页可以进行编辑，按不同学科适配用语规范，可自定义学科并改进提示词，使 AI 输出更贴合目标领域的表达习惯。</p>
       <div class="shots">
         <img class="shot" src="xzgf.png" alt="写作规范">
       </div>
-      <h4>🧩 自定义动作</h4>
 
-      <p>在设置页创建带自定义提示词的可复用工具栏动作，将高频操作沉淀为「一键指令」，无需每次重复输入。每个动作可配置<strong>名称、图标（50+ 内置图标）与提示词</strong>，保存后选中文本时浮动工具栏自动显示对应图标，点击即执行。</p>
+      <h4>🧩 2.自定义动作</h4>
+      <p>在设置页创建带自定义提示词的可复用工具栏动作，将高频操作沉淀为「一键指令」，无需每次重复输入。每个动作可配置<strong>名称、图标（50+ 内置图标）与提示词</strong>，保存后选中文本时仪表盘浮动工具栏自动显示对应图标，点击即执行。</p>
       <p>提示词支持多种变量占位符与切片语法，便于截取长文档的局部上下文：</p>
       <div class="table-wrap">
         <table>
@@ -994,11 +992,11 @@
       </div>
       <p>所有提示词会自动被 LaTeX 上下文规则包裹，确保输出为合法 LaTeX，可预览、重新生成、插入或替换。</p>
 
-      <h4>🌐 自定义域名</h4>
+      <h4>🌐 3.自定义域名</h4>
       <p>除内置的 <code>overleaf.com</code> 与 <code>latex.ustc.edu.cn</code> 外，扩展支持任意自托管 Overleaf 实例。在设置页输入自托管地址（如 <code>https://my-overleaf.edu.cn</code>），授权后扩展自动为该域名注册内容脚本；域名列表可随时查看并逐个移除（撤销脚本与主机权限）。</p>
       <div class="callout tip"><strong>提示：</strong>该功能使扩展不仅限于公开站点，适配校内或私有部署的 Overleaf 环境。</div>
 
-      <h4>🤖 AI 建议</h4>
+      <h4>🤖 4.AI 建议</h4>
       <p>AI 建议提供细粒度的生成控制，可在设置页按需调整：</p>
       <ul>
         <li><strong>键盘快捷键</strong>：录制组合键触发 AI 建议，<kbd>Backspace</kbd> 清除，默认 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd>。</li>
@@ -1012,14 +1010,16 @@
       <h2><span class="num">三</span>安装与部署</h2>
 
       <h3 id="install-files">3.1 获取扩展文件</h3>
-      <p>从科大云盘可以获取工具的最新版本：</p>
+      <p>从科大云盘可以获取工具的最新和以往测试版本：</p>
       <p><a class="btn" href="https://pan.ustc.edu.cn/share/index/b2eef59d1d5f4ea487a2" target="_blank" rel="noopener">点我获取</a></p>
       <p>云盘链接：<a href="https://pan.ustc.edu.cn/share/index/b2eef59d1d5f4ea487a2" target="_blank" rel="noopener">https://pan.ustc.edu.cn/share/index/b2eef59d1d5f4ea487a2</a></p>
+      <div class="callout tip"><strong>提示：</strong> 也可以使用 <strong>Microsoft Edge 拓展商店</strong>获取拓展，但是碍于一些原因可能更新较慢，目前新版本正在审核中。</div>
+
 
       <h3 id="install-apikey">3.2 获取 API Key</h3>
       <p>本扩展需连接 LLM API，推荐科大 <code>https://api.llm.ustc.edu.cn</code>，也兼容任意 OpenAI API。</p>
       <div class="callout">
-        <strong>提示：</strong>扩展<strong>内置默认 API 地址</strong>，只需在选项中填入 API Key 即可使用。
+        <strong>提示：</strong>在设置页API配置中点击<strong>一键获取 API 密钥</strong>，只需统一身份认证登录即可自动连接科大LLM平台的API密钥。
       </div>
 
       <h3 id="install-edge">3.3 Microsoft Edge 部署</h3>
@@ -1050,7 +1050,7 @@
         <li>打开 <code>chrome://extensions/</code>，开启右上角 <strong>开发者模式</strong></li>
         <li>点击 <strong>「加载已解压的扩展程序」</strong>，选择 <code>build</code> 文件夹</li>
         <li>扩展图标出现在工具栏右上角</li>
-        <li>右键扩展图标 → <strong>「选项」</strong> → 填入 API Key → 保存</li>
+        <li>打开 <strong>https://latex.ustc.edu.cn/</strong> 登录并刷新，看到编辑器右下角出现“AI”助手即安装成功</li>
       </ol>
       <div class="callout tip"><strong>Linux：</strong>Chrome 在各大 Linux 发行版软件源可安装（<code>google-chrome-stable</code>），步骤同 Windows。</div>
 
@@ -1167,12 +1167,14 @@
     <section id="usage">
       <h2><span class="num">五</span>使用方法</h2>
 
+      <div class="callout tip">这里的使用方法指 <strong>快捷键/工作流程</strong>，想看各按钮功能请参见 <strong>功能特性</strong>。</div>
+
       <h3 id="usage-trigger">5.1 触发方式</h3>
       <div class="table-wrap">
         <table>
           <thead><tr><th style="width:160px">触发方式</th><th>操作</th><th style="width:250px">适用功能</th></tr></thead>
           <tbody>
-            <tr><td><strong>徽章菜单</strong></td><td>点编辑器左上角 AI 徽章选功能</td><td>续写、自定义任务、文章修改、语法修改</td></tr>
+            <tr><td><strong>徽章菜单</strong></td><td>点编辑器右下角 AI 徽章选功能</td><td>续写、自定义任务、文章修改、语法修改</td></tr>
             <tr><td><kbd>Tab</kbd></td><td>接受内联幽灵建议</td><td>一键采纳 AI 续写</td></tr>
             <tr><td><kbd>Ctrl</kbd>+<kbd>→</kbd></td><td>逐词接受内联建议</td><td>精确控制采纳内容</td></tr>
             <tr><td><kbd>Esc</kbd></td><td>取消建议</td><td>放弃当前建议</td></tr>
@@ -1180,25 +1182,7 @@
         </table>
       </div>
 
-      <h3 id="usage-badge">5.2 状态徽章菜单</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th style="width:180px">操作</th><th>说明</th></tr></thead>
-          <tbody>
-            <tr><td><strong>继续写作</strong></td><td>从光标 / 选中处继续撰写</td></tr>
-            <tr><td><strong>自定义任务</strong></td><td>输入任意指令</td></tr>
-            <tr><td><strong>文章修改</strong></td><td>深度改写选中文本（需先选中）</td></tr>
-            <tr><td><strong>语法修改</strong></td><td>自动编译并修复语法 / 编译错误</td></tr>
-            <tr><td><strong>输出模式切换</strong></td><td>循环 短输出 → 中输出 → 长输出</td></tr>
-            <tr><td><strong>设置</strong></td><td>打开扩展选项页</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3 id="usage-toolbar">5.3 浮动工具栏</h3>
-      <p>选中文本后显示，每个<strong>自定义动作</strong>一个图标按钮，点击即执行对应 AI 提示词。</p>
-
-      <h3 id="usage-shortcut">5.4 键盘快捷键</h3>
+      <h3 id="usage-shortcut">5.2 键盘快捷键</h3>
       <div class="table-wrap">
         <table>
           <thead><tr><th style="width:190px">快捷键</th><th>功能</th><th>说明</th></tr></thead>
@@ -1215,7 +1199,7 @@
         </table>
       </div>
 
-      <h3 id="usage-workflow">5.5 快捷键工作流示例</h3>
+      <h3 id="usage-workflow">5.3 快捷键工作流示例</h3>
 
       <h4>纯键盘续写</h4>
       <ol class="steps">
@@ -1271,7 +1255,7 @@
       <div class="callout tip"><strong>API 密钥</strong>存于 <code>chrome.storage.local</code>，用为安装实例生成的唯一密钥加密，<strong>绝不明文、绝不发送给我们</strong>。</div>
 
       <h3 id="privacy-contact">6.5 联系与反馈</h3>
-      <p>如有疑问请联系本拓展开发小组成员。</p>
+      <p>如有疑问请联系本拓展开发小组成员。内测QQ群：1101715467</p>
     </section>
 
     <!-- ============ 七、常见问题 ============ -->
@@ -1438,7 +1422,7 @@
         技术支持：请联系开发小组成员 / 在 GitLab Issues 中反馈问题。
       </p>
       <p style="margin:8px 0 0;font-size:13px;color:#94a3b8;">
-        USTC Overleaf LaTeX Agent v1.0.5 · 为中国科学技术大学学术社区打造
+        USTC Overleaf LaTeX Agent v1.0.7 · 为中国科学技术大学学术社区打造
       </p>
     </section>
 
