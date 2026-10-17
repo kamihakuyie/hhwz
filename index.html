@@ -177,6 +177,14 @@
     border-bottom:2px solid var(--border);
     letter-spacing:-.2px;
   }
+  .firstuse{
+    border-top:5px solid var(--primary);
+    background:linear-gradient(180deg,#f5f9ff 0%,#ffffff 42%);
+  }
+  .firstuse > h2 .num{
+    background:linear-gradient(135deg,#f59e0b,#f97316);
+    box-shadow:0 4px 12px -3px rgba(245,158,11,.55);
+  }
   section > h2 .num{
     display:inline-flex;
     align-items:center;
@@ -839,6 +847,7 @@
   <!-- ============================= SIDEBAR ============================= -->
   <aside class="sidebar" id="sidebar">
     <h4>目录</h4>
+    <a href="#firstuse" class="sub">首次使用</a>
     <a href="#overview" class="sub">工具简介</a>
     <a href="#features" class="sub">功能特性</a>
     <a href="#install" class="sub">安装与部署</a>
@@ -853,6 +862,23 @@
 
   <!-- ============================= MAIN ============================= -->
   <main>
+
+    <!-- ============ 零、首次使用 ============ -->
+    <section id="firstuse" class="firstuse">
+      <h2><span class="num">〇</span>首次使用</h2>
+      <p>欢迎使用 <strong>瀚海文助——USTC LaTeX 学术写作助手</strong>！只需几步即可开启 AI 辅助写作。首次使用请按以下流程操作，全程约 3 分钟。</p>
+      <ol class="steps">
+        <li><strong>获取扩展</strong>：从科大云盘下载最新版本（见「<a href="#install-files">3.1 获取扩展文件</a>」）。</li>
+        <li><strong>安装扩展</strong>：按浏览器类型加载解压后的 <code>build</code> 文件夹（见「<a href="#install">三、安装与部署</a>」）。</li>
+        <li><strong>获取 API Key</strong>：注册科大 LLM 平台，推荐 <code>https://api.llm.ustc.edu.cn</code>（见「<a href="#install-apikey">3.2 获取 API Key</a>」）。</li>
+        <li><strong>填写 API Key</strong>：点扩展「选项」，填入 API Key，点「测试连接」并选择模型后保存。</li>
+        <li><strong>开始写作</strong>：打开 <code>latex.ustc.edu.cn</code> 项目，点击界面<strong>右下角仪表盘</strong>即可使用全部 AI 功能。</li>
+      </ol>
+      <div class="callout tip"><strong>提示：</strong>使用前请阅读 <a href="#privacy">隐私政策</a>，并遵守 <a href="#features">学术诚信</a> 相关规范。</div>
+      <p style="margin-top:14px;">
+        <a class="btn" href="#install">开始安装 →</a>
+      </p>
+    </section>
 
     <!-- ============ 一、简介 ============ -->
     <section id="overview">
